@@ -29,37 +29,39 @@ class Random2DPoses:
         self.step_time = rospy.get_param( '~step_time' )
         self.num_waypoints = rospy.get_param( '~num_waypoints' )
 
-        step_rate = rospy.get_param( '~step_rate' )
-        self.timer = rospy.Timer( rospy.Duration( 1.0/step_rate ), self.TimerCallback )
+        dwell_time = rospy.get_param( '~dwell_time' )
+        self.loop_wait = rospy.Duration( dwell_time )
 
-    def TimerCallback( self, event ):
+    def Execute( self ):
+        while not rospy.is_shutdown():
+            x = random.uniform( self.x_lims[0], self.x_lims[1] )
+            y = random.uniform( self.y_lims[0], self.y_lims[1] )
+            
+            rospy.loginfo( 'Traversing to x: %f, y: %f', x, y )
 
-        x = random.uniform( self.x_lims[0], self.x_lims[1] )
-        y = random.uniform( self.y_lims[0], self.y_lims[1] )
-        
-        rospy.loginfo( 'Traversing to x: %f, y: %f', x, y )
+            req = SetCartesianLinearRequest()
+            req.pose.position.x = x;
+            req.pose.position.y = y;
+            req.pose.position.z = self.z_value
+            req.pose.orientation.w = self.ori[0]
+            req.pose.orientation.x = self.ori[1]
+            req.pose.orientation.y = self.ori[2]
+            req.pose.orientation.z = self.ori[3]
+            req.duration = self.step_time
+            req.num_waypoints = self.num_waypoints
 
-        req = SetCartesianLinearRequest()
-        req.pose.position.x = x;
-        req.pose.position.y = y;
-        req.pose.position.z = self.z_value
-        req.pose.orientation.w = self.ori[0]
-        req.pose.orientation.x = self.ori[1]
-        req.pose.orientation.y = self.ori[2]
-        req.pose.orientation.z = self.ori[3]
-        req.duration = self.step_time
-        req.num_waypoints = self.num_waypoints
+            try:
+                self.pose_service( req )
+            except rospy.ServiceException as e:
+                rospy.logerror( 'Could not query critique: ' + str(e) )
 
-        try:
-            self.pose_service( req )
-        except rospy.ServiceException as e:
-            ros.logerror( 'Could not query critique: ' + str(e) )
+            rospy.sleep( self.loop_wait )
 
 if __name__=='__main__':
     rospy.init_node( 'random_2d_poses' )
     try:
         r2dp = Random2DPoses()
-        rospy.spin()
+        r2dp.Execute()
     except rospy.ROSInterruptException:
         pass
 
