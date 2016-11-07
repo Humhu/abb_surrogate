@@ -7,7 +7,8 @@ set( CMAKE_BUILD_TYPE Release )
 find_package( catkin 	REQUIRED COMPONENTS
               			roscpp
               			argus_utils
-	                    open_abb_driver )
+	                    open_abb_driver
+	                    paraset )
 
 catkin_package(
 	INCLUDE_DIRS	include
@@ -16,6 +17,7 @@ catkin_package(
 					
 	CATKIN_DEPENDS 	roscpp
 					argus_utils
+					paraset
 )
 
 include_directories( include
