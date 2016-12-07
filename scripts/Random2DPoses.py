@@ -53,7 +53,7 @@ class Random2DPoses:
             try:
                 self.pose_service( req )
             except rospy.ServiceException as e:
-                rospy.logerror( 'Could not query critique: ' + str(e) )
+                rospy.logerr( 'Could not query critique: ' + str(e) )
 
             rospy.sleep( self.loop_wait )
 

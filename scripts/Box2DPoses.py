@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import rospy, random
+import rospy, random, math
 import numpy as np
 # from open_abb_driver.srv import SetSpeed, SetSpeedRequest
 from open_abb_driver.srv import SetCartesianLinear, SetCartesianLinearRequest
@@ -16,16 +16,11 @@ class Box2DPoses:
         # self.speed_service = rospy.ServiceProxy( set_speed_topic, SetSpeed )
         self.pose_service = rospy.ServiceProxy( set_pose_topic, SetCartesianLinear )
 
-        self.x_lims = rospy.get_param( '~x_lims' )
-        if type( self.x_lims ) is not list or len( self.x_lims ) != 2:
-            raise ValueError( 'Box2DPoses: x_lims must be [min,max]' )
-
-        self.y_lims = rospy.get_param( '~y_lims' )
-        if type( self.y_lims ) is not list or len( self.y_lims ) != 2:
-            raise ValueError( 'Box2DPoses: y_lims must be [min,max]' )
+        self.x_coords = rospy.get_param( '~x_coords' )
+        self.y_coords = rospy.get_param( '~y_coords' )
+        self.yaw_coords = rospy.get_param( '~yaw_coords' )
 
         self.z_value = rospy.get_param( '~z_value' )
-        self.ori = rospy.get_param( '~orientation' )
         self.step_time = rospy.get_param( '~step_time' )
         self.num_waypoints = rospy.get_param( '~num_waypoints' )
         self.num_loops = rospy.get_param( '~num_loops' )
@@ -33,27 +28,24 @@ class Box2DPoses:
         dwell_time = rospy.get_param( '~dwell_time' )
         self.loop_wait = rospy.Duration( dwell_time )
 
-        self.waypoints = [ (self.x_lims[0], self.y_lims[0]),
-                           (self.x_lims[0], self.y_lims[1]),
-                           (self.x_lims[1], self.y_lims[1]),
-                           (self.x_lims[1], self.y_lims[0]) ]
+        self.waypoints = zip( self.x_coords, self.y_coords, self.yaw_coords )
 
         self.evaluation_service = rospy.Service( '~start_trajectory', StartEvaluation, 
                                                  self.EvaluationCallback )
 
     def EvaluationCallback( self, srv ):
         for i in range(self.num_loops):
-            for (x,y) in self.waypoints:
-                rospy.loginfo( 'Traversing to x: %f, y: %f', x, y )
+            for (x,y,yaw) in self.waypoints:
+                rospy.loginfo( 'Traversing to x: %f, y: %f, yaw: %f', x, y, yaw )
 
                 req = SetCartesianLinearRequest()
                 req.pose.position.x = x;
                 req.pose.position.y = y;
                 req.pose.position.z = self.z_value
-                req.pose.orientation.w = self.ori[0]
-                req.pose.orientation.x = self.ori[1]
-                req.pose.orientation.y = self.ori[2]
-                req.pose.orientation.z = self.ori[3]
+                req.pose.orientation.w = math.cos( yaw/2 )
+                req.pose.orientation.x = 0
+                req.pose.orientation.y = 0
+                req.pose.orientation.z = math.sin( yaw/2 )
                 req.duration = self.step_time
                 req.num_waypoints = self.num_waypoints
 
