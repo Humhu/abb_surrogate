@@ -14,14 +14,20 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>roscpp</build_depend>
-  <build_depend>argus_utils</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>message_generation</build_depend>
   <build_depend>open_abb_driver</build_depend>
-  <build_depend>paraset</build_depend>
+  <build_depend>argus_utils</build_depend>
+  <build_depend>fieldtrack</build_depend> 
+  <build_depend>infitu</build_depend>
+  <build_depend>foxconn_localization</build_depend>  
   
-  <run_depend>roscpp</run_depend>
-  <run_depend>argus_utils</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>message_generation</run_depend>
   <run_depend>open_abb_driver</run_depend>
-  <run_depend>paraset</run_depend>
-  
+  <run_depend>argus_utils</run_depend>
+  <run_depend>fieldtrack</run_depend>  
+  <run_depend>infitu</run_depend>  
+  <run_depend>foxconn_localization</run_depend>  
+
 </package>

@@ -1,0 +1,35 @@
+<launch>
+
+   <node pkg="foxy_localization_evaluation" type="performance_estimator.py" name="mse" output="screen">
+        <rosparam>
+            log_rewards: true
+        </rosparam>
+    </node>
+
+  <node pkg="infitu" type="RewardAccumulator.py" name="integrated_mse" output="screen">
+      <remap from="reward" to="mse/reward"/>
+      <rosparam>
+          mode:
+            time_integrate: true
+            normalize_time: true
+      </rosparam>
+  </node>
+
+    <node pkg="infitu" type="MSEPerformanceEvaluator.py" name="ape" output="screen">
+        <rosparam>
+            pose_weights: [0,0,0,0,0,0]
+            vel_weights: [1,1,0,0,0,1]
+            log_rewards: true
+        </rosparam>
+    </node>
+
+    <node pkg="infitu" type="RewardAccumulator.py" name="integrated_ape" output="screen">
+      <remap from="reward" to="ape/reward"/>
+      <rosparam>
+          mode:
+            time_integrate: true
+            normalize_time: true
+      </rosparam>
+  </node>
+
+</launch>

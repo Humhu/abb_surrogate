@@ -1,0 +1,37 @@
+<launch>
+
+    <include file="$(find abb_surrogate)/launch/vo_param_interface.launch"/>
+    <include file="$(find abb_surrogate)/launch/rewards.launch"/>
+
+    <node pkg="abb_surrogate" type="RandomSpeedWaypoints.py" name="arm_tester" output="screen">
+        <rosparam>
+            set_pose_service: /abb_arm/set_cartesian_linear
+            
+            speed_stream_name: next_arm_speed
+            x_lims: [-0.2, 0.2]
+            y_lims: [-0.2, 0.2]
+            z_value: 0.15
+            orientation: [1, 0, 0, 0]
+            num_loops: 2
+            step_time: 1.0
+            seed: 1
+        </rosparam>
+    </node>
+
+    <node pkg="infitu" type="EmpiricalParameterEvaluator.py" name="parameter_evaluator" output="screen" required="true">
+        <rosparam>
+            parameter_set_service: /vo_interface/set_parameters
+            start_evaluation_service: /arm_tester/start_trajectory
+            reset_filter_service: /state_estimator/reset
+            
+            evaluation_delay: 1.0
+
+            recorders:
+                int_mse: integrated_mse/set_recording
+                int_ape: integrated_ape/set_recording
+
+        </rosparam>
+        <param name="critique_record" value="$(arg critique_record)"/>
+    </node>
+
+</launch>

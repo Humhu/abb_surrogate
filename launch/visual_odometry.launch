@@ -1,0 +1,80 @@
+<launch>
+  
+    <include file="$(find foxy_localization_bringup)/launch/foxybot_state_estimator.launch"/>
+
+    <group ns="visual_odometry">
+        <node pkg="extrinsics_array" type="extrinsics_publisher_node" name="extpub">
+            <rosparam>
+                pseye051_wide:
+                    parent_id: base_link
+                    pose:
+                        x: 0
+                        y: 0
+                        z: 0
+                        yaw: 0
+                        pitch: 1.57079632679
+                        roll: 0
+            </rosparam>
+        </node>
+
+        <node pkg="lookup" type="lookup_registrar" name="camera_registrar">
+            <rosparam>
+                target_name: pseye051_wide
+                target_namespace: camera
+            </rosparam>
+        </node>
+
+        <!--   <node pkg="fieldtrack" type="velocity_converter_node" name="vo_converter" output="screen">
+            <remap from="twist" to="velocity_raw"/>
+            <rosparam>
+                target_body_frame: end_effector
+            </rosparam>
+            </node> -->
+
+        <node pkg="camplex" type="camera_node" name="camera">
+            <rosparam>
+                device_path: /dev/video0
+                camera_name: pseye051_wide
+                frame_resolution: [320, 240]
+                frame_rate: 120
+                stream_on_start: true
+            </rosparam>
+        </node>
+
+        <node pkg="odoflow" type="visual_odometry_node" name="vo_node" output="log">
+            <rosparam>
+            sources:
+                camera:
+                    image_topic: camera/image_raw
+                    output_topic: velocity_raw
+                    buffer_size: 2
+                    show_output: false
+
+            redetection_threshold: 1.0
+            min_inlier_ratio: 0.5
+            subsample_rate: 0
+            max_frame_dt: 0.2
+            num_threads: 2
+            min_num_keypoints: 10
+
+            detector:
+                type: fixed
+                grid_dim: 10
+            tracker:
+                type: lucas_kanade
+                max_iters: 20
+                log_min_eps: 0
+                window_dim: 20
+                pyramid_level: 5
+                flow_eigenvalue_threshold: 1E-4
+                flow_error_threshold: 10
+            estimator:
+                type: rigid
+                log_reprojection_threshold: -2
+                scale: 0.135
+                max_iters: 100
+            </rosparam>
+        </node>
+
+    </group>
+</launch>

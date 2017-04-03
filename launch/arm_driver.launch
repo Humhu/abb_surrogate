@@ -1,0 +1,46 @@
+<launch>
+
+  <node pkg="fieldtrack" type="odometry_differentiator_node" name="arm_differentiator" output="screen">
+    <remap from="input" to="/abb_arm/pose"/>
+    <remap from="output" to="/odom_truth"/>
+    <rosparam>
+        min_dt: 0.05
+        input_mode: pose_stamped
+        output_mode: odometry
+    </rosparam>
+  </node>
+
+   <node pkg="open_abb_driver" type="abb_node" name="abb_arm" output="screen">
+       <rosparam>
+          work_object_pose: 
+              x: 0.0
+              y: -0.9
+              z: 0.1
+              yaw: 0
+              pitch: 0
+              roll: 0
+
+          tool_pose:
+              x: 0.165
+              y: 0
+              z: -0.08
+              yaw: 0
+              pitch: -1.57079632679
+              roll: 0
+
+          ik_weights: [1, 1, 1, 2, 1, 0.5]
+
+          joint1_limits: [-3.146, 3.146]
+          joint2_limits: [-1.45, 1.45]
+          joint3_limits: [-1.0472, 1.1345]
+          joint4_limits: [-3.49, 3.49]
+          joint5_limits: [-2.0944, 2.0944]
+          joint6_limits: [-6.9813, 6.9813]
+
+          zone: 5
+          speed_tcp: 1.0
+          speed_ori: 1.0
+      </rosparam>
+  </node>
+
+</launch>
