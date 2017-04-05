@@ -2,8 +2,10 @@
 
 import rospy, random
 import numpy as np
+
 # from open_abb_driver.srv import SetSpeed, SetSpeedRequest
 from open_abb_driver.srv import SetCartesianLinear, SetCartesianLinearRequest
+from percepto_msgs.msg import EpisodeBreak
 
 class Random2DPoses:
 
@@ -37,6 +39,8 @@ class Random2DPoses:
         self.iter_counter = 0
         self.iters_to_run = rospy.get_param( '~iterations', -1 )
 
+        self.break_pub = rospy.Publisher('~breaks', EpisodeBreak, queue_size=10)
+
     def Execute( self ):
         while not rospy.is_shutdown():
             if self.iters_to_run != -1 and self.iter_counter >= self.iters_to_run:
@@ -62,6 +66,10 @@ class Random2DPoses:
                 self.pose_service( req )
             except rospy.ServiceException as e:
                 rospy.logerr( 'Could not move to pose: ' + str(e) )
+
+            bmsg = EpisodeBreak()
+            bmsg.break_time = rospy.Time.now()
+            self.break_pub.publish(bmsg)
 
             rospy.sleep( self.loop_wait )
             self.iter_counter += 1
