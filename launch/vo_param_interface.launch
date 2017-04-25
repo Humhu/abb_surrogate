@@ -1,44 +1,17 @@
 <launch>
 
-    <node pkg="infitu" type="ContinuousParameterInterface.py" name="vo_interface" output="screen" required="true">
-        <rosparam>
-            interface:
-                detector_grid_dim:
-                    param_name: grid_dim
-                    base_namespace: visual_odometry/vo_node/detector
-                    lower_limit: 5
-                    upper_limit: 50
-                tracker_log_min_eps:
-                    param_name: log_min_eps
-                    base_namespace: visual_odometry/vo_node/tracker
-                    lower_limit: -1
-                    upper_limit: 1
-                tracker_pyramid_level:
-                    param_name: pyramid_level
-                    base_namespace: visual_odometry/vo_node/tracker
-                    lower_limit: 0
-                    upper_limit: 5
-                tracker_window_dim:
-                    param_name: window_dim
-                    base_namespace: visual_odometry/vo_node/tracker
-                    lower_limit: 5
-                    upper_limit: 50
-                tracker_flow_error:
-                    param_name: flow_error_threshold
-                    base_namespace: visual_odometry/vo_node/tracker
-                    lower_limit: 0
-                    upper_limit: 15.0
-                estimator_iters:
-                    param_name: max_iters
-                    base_namespace: visual_odometry/vo_node/estimator
-                    lower_limit: 10
-                    upper_limit: 200
-                estimator_log_reproj_thresh:
-                    param_name: log_reprojection_threshold
-                    base_namespace: visual_odometry/vo_node/estimator
-                    lower_limit: -3
-                    upper_limit: -1
-        </rosparam>
-    </node>
+<arg name="verbose" default="false"/>
+<arg name="camera_params" default="true"/>
+<arg name="detector_params" default="true"/>
+<arg name="tracker_params" default="true"/>
+<arg name="estimator_params" default="true"/>
+
+<node pkg="infitu" type="ContinuousParameterInterface.py" name="vo_interface" output="screen" required="true">
+    <param name="interface/verbose" value="$(arg verbose)"/>
+    <rosparam command="load" file="$(find abb_surrogate)/configs/vo_camera_params.yaml" if="$(arg camera_params)" ns="interface"/>
+    <rosparam command="load" file="$(find abb_surrogate)/configs/vo_detector_params.yaml" if="$(arg detector_params)" ns="interface"/>
+    <rosparam command="load" file="$(find abb_surrogate)/configs/vo_tracker_params.yaml" if="$(arg tracker_params)" ns="interface"/>    
+    <rosparam command="load" file="$(find abb_surrogate)/configs/vo_estimator_params.yaml" if="$(arg estimator_params)" ns="interface"/>    
+</node>
 
 </launch>

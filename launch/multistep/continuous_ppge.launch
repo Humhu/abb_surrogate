@@ -1,0 +1,119 @@
+<launch>
+
+    <node pkg="foxy_localization_evaluation" type="floor_features.py" name="features" output="screen">
+        <remap from="image" to="visual_odometry/camera/image_raw"/>
+        <rosparam>
+            scale: 0.1
+            laplacian_k: 1
+            pyramid_levels: 2
+            stream_name: floor_features
+            buffer_size: 1
+        </rosparam>
+    </node>
+
+    <node pkg="broadcast" type="ConstantFeatures.py" name="const_feats" output="screen">
+        <rosparam>
+            stream_name: const_features
+            description: Constant features
+            features: [1]
+            mode: pull
+            cache_time: 10
+            publish_rate: 1.0
+        </rosparam>
+    </node>
+
+    <node pkg="infitu" type="ParameterPPGENode.py" name="bandit" output="screen" required="true">
+        <param name="out_file" value="$(arg out_file)"/>
+        <param name="learning/reward_topic" value="$(arg reward_topic)"/>
+        <param name="input_stream" value="$(arg input_stream)"/>
+        <rosparam>
+            max_episodes: 500
+            interface:
+                verbose: false
+                detector_intensity_threshold:
+                    param_name: intensity_threshold
+                    base_namespace: visual_odometry/vo_node/detector
+                    lower_limit: 20
+                    upper_limit: 200
+                detector_max_num_points:
+                    param_name: max_num_points
+                    base_namespace: visual_odometry/vo_node/detector
+                    lower_limit: 25
+                    upper_limit: 1000
+                <!--tracker_log_min_eps:
+                    param_name: log_min_eps
+                    base_namespace: visual_odometry/vo_node/tracker
+                    lower_limit: -1
+                    upper_limit: 1
+                tracker_pyramid_level:
+                    param_name: pyramid_level
+                    base_namespace: visual_odometry/vo_node/tracker
+                    lower_limit: 0
+                    upper_limit: 5
+                tracker_window_dim:
+                    param_name: window_dim
+                    base_namespace: visual_odometry/vo_node/tracker
+                    lower_limit: 5
+                    upper_limit: 50
+                tracker_flow_error:
+                    param_name: flow_error_threshold
+                    base_namespace: visual_odometry/vo_node/tracker
+                    lower_limit: 0
+                    upper_limit: 15.0
+                estimator_iters:
+                    param_name: max_iters
+                    base_namespace: visual_odometry/vo_node/estimator
+                    lower_limit: 10
+                    upper_limit: 200
+                estimator_log_reproj_thresh:
+                    param_name: log_reprojection_threshold
+                    base_namespace: visual_odometry/vo_node/estimator
+                    lower_limit: -3
+                    upper_limit: -1-->
+                
+            policy_rate: 5.0
+            learn_rate: 1.0
+            
+            deterministic_policy:
+                type: deterministic_linear
+                input_processing:
+                    enable_homogeneous: true
+                output_processing:
+                    type: box
+                    lims: 1
+
+            ppge:
+                type: ppge
+                output_processing:
+                    type: box
+                    lims: 2
+                sds: 0.3
+
+            learning:
+                break_topic: /arm_tester/breaks
+                traj_remove_logprob: -2
+                episode_recording:
+                    mixing_mode: average
+                    interpolation_mode: linear
+                    integration_mode: traps
+                gradient_estimation:
+                    type: episodic_policy_gradient
+                    traj_mode: ppge
+                    batch_size: 30
+                    buffer_size: 500
+                    use_natural_gradient: true
+                    use_baseline: true
+                    sampling_args:
+                        normalize: true
+                        log_weight_lim: 2
+                    min_ess: 30
+                    max_grad_flip_prob: 0.3
+                optimizer:
+                    type: gradient_descent
+                    step_size: 1E-1
+                    max_linf_norm: 0.1
+
+        </rosparam>
+    </node>
+
+</launch>

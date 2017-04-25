@@ -1,0 +1,67 @@
+<launch>
+
+<include file="$(find abb_surrogate)/launch/rewards.launch"/>
+
+<node pkg="abb_surrogate" type="CenteredCircles.py" name="arm_tester" output="screen">
+    <rosparam>
+        set_traj_service: /abb_arm/set_cartesian_trajectory
+        
+        motion_monitor:
+            topic: /abb_arm/pose
+            tol: 1E-3
+            poll_rate: 50.0
+        
+        x_lims: [-0.5, 0.5]
+        y_lims: [-0.3, 0.3]
+        radius: 0.1
+        num_loops: 2
+        num_loop_waypoints: 30
+        loop_interp_density: 3
+        
+        min_speed: 0.1
+        max_speed: 0.3
+
+        z_value: 0.2
+        orientation: [1, 0, 0, 0]
+
+        center_stream_name: next_loop_info
+
+        waypoints_x: [-0.3, 0.3, -0.3, 0.3, -0.3, 0.3]
+        waypoints_y: [0, 0, 0.05, 0.05, -0.05, -0.05]
+        teardown_time: 1.0
+        teardown_interp_density: 20
+        
+        seed: 1
+    </rosparam>
+</node>
+
+<node pkg="infitu" type="EmpiricalParameterEvaluator.py" name="evaluator" output="screen" required="true">
+    <rosparam>
+        parameter_set_service: /vo_interface/set_parameters
+        start_evaluation_service: /arm_tester/start_trajectory
+        start_teardown_service: /arm_tester/start_teardown
+        reset_filter_service: /state_estimator/reset
+        
+        evaluation_delay: 0.1
+
+        recorders:
+            int_mse: integrated_mse/set_recording
+            int_ape: integrated_ape/set_recording
+
+    </rosparam>
+    <param name="critique_record" value="$(arg critique_record)"/>
+</node>
+
+<node pkg="abb_surrogate" type="SynchronizedRandomSample.py" name="sampler" output="screen" required="true">
+    <param name="output_path" value="$(arg output_path)"/>
+    <rosparam>
+        action_lower_bound: -1
+        action_upper_bound: 1
+        action_dim: 6
+        num_samples: 3000
+        input_stream: next_loop_info
+        critique_topic: evaluator/get_critique
+    </rosparam>
+</node>
+
+</launch>

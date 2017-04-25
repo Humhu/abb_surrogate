@@ -1,0 +1,12 @@
+# Camera capture parameters
+
+camera_exposure:
+    param_name: exposure
+    base_namespace: visual_odometry/camera
+    lower_limit: 0
+    upper_limit: 255
+camera_gain:
+    param_name: gain
+    base_namespace: visual_odometry/camera
+    lower_limit: 0
+    upper_limit: 63

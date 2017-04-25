@@ -1,0 +1,45 @@
+<launch>
+
+<node pkg="infitu" type="SynchronousPolicyNode.py" name="bandit" output="screen" required="true">
+    <param name="out_file" value="$(arg out_file)"/>
+    <param name="input_stream" value="$(arg input_stream)"/>
+    <rosparam>
+        max_episodes: 100
+        critique_topic: parameter_evaluator/get_critique
+        action_dim: 1
+        policy_rate: 1.0
+        learn_rate: 1.0
+        policy:
+            type: fixed_linear
+        input_processing:
+            enable_homogeneous: true
+            normalization:
+                mode: minmax
+                min_samples: 2
+                keep_updating: False
+            augmentation:
+                type: polynomial
+                max_order: 1
+        output_processing:
+            type: box
+            lims: 1
+        learning:
+            gradient_estimation:
+                type: episodic_policy_gradient
+                traj_mode: reinforce
+                batch_size: 500
+                buffer_size: 500
+                use_natural_gradient: true
+                use_baseline: true
+                sampling_args:
+                    log_weight_lim: 3
+                    normalize: true
+                min_ess: 50
+            optimizer:
+                type: gradient_descent
+                step_size: 1E-2
+                max_linf_norm: 1E-2
+    </rosparam>
+</node>
+
+</launch>

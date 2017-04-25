@@ -1,0 +1,12 @@
+# VO motion estimator parameters
+
+estimator_log_reproj_thresh:
+    param_name: log_reprojection_threshold
+    base_namespace: visual_odometry/vo_node/estimator
+    lower_limit: -3
+    upper_limit: -1
+estimator_max_iters:
+    param_name: max_iters
+    base_namespace: visual_odometry/vo_node/estimator
+    lower_limit: 1
+    upper_limit: 1000

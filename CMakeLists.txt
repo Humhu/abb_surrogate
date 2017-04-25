@@ -7,6 +7,8 @@ find_package( catkin 	REQUIRED
 	                    open_abb_driver
 	                    message_generation)
 
+catkin_python_setup()
+
 add_service_files( FILES SetSpeed.srv )
 generate_messages()
 
@@ -15,6 +17,7 @@ catkin_package(
 					argus_utils
 					message_generation
 )
+
 
 include_directories( include
 					 ${catkin_INCLUDE_DIRS} )

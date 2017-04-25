@@ -1,0 +1,32 @@
+<launch>
+    <include file="$(find abb_surrogate)/launch/rewards.launch"/>
+    
+    <node pkg="abb_surrogate" type="RandomSpeedWaypoints.py" name="arm_tester" output="screen">
+        <rosparam>
+            set_traj_service: /abb_arm/set_cartesian_trajectory
+            reset_filter_service: state_estimator/reset
+            
+            motion_monitor:
+                topic: /abb_arm/pose
+                tol: 1E-3
+                poll_rate: 50.0
+
+            trigger_mode: timer
+            spin_rate: 1.0
+
+            num_pose_waypoints: 10
+            speed_stream_name: next_arm_speed
+
+            waypoint_mode: fixed_waypoints
+            waypoints_x: [-0.2, 0.2]
+            waypoints_y: [0, 0]
+            min_speed: 0.3
+            max_speed: 0.4
+            
+            z_value: 0.15
+            orientation: [1, 0, 0, 0]
+            seed: 1
+        </rosparam>
+    </node>
+
+</launch>
