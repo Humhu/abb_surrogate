@@ -1,5 +1,7 @@
 <launch>
 
+<arg name="enable_filter_reset" default="true"/>
+
 <include file="$(find abb_surrogate)/launch/rewards.launch"/>
 
 <node pkg="abb_surrogate" type="CenteredCircles.py" name="arm_tester" output="screen">
@@ -36,11 +38,12 @@
 </node>
 
 <node pkg="infitu" type="EmpiricalParameterEvaluator.py" name="evaluator" output="screen" required="true">
+    <param name="reset_filter_service" value="/state_estimator/reset" if="$(arg enable_filter_reset)"/>
     <rosparam>
         parameter_set_service: /vo_interface/set_parameters
+        evaluation_mode: service_call
         start_evaluation_service: /arm_tester/start_trajectory
         start_teardown_service: /arm_tester/start_teardown
-        reset_filter_service: /state_estimator/reset
         
         evaluation_delay: 0.1
 

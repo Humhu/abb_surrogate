@@ -1,0 +1,31 @@
+<launch>
+
+<arg name="min_speed" default="0.3"/>
+<arg name="max_speed" default="0.5"/>
+
+<node pkg="abb_surrogate" type="RandomSpeedWaypoints.py" name="arm_tester" output="screen">
+    <param name="min_speed" value="$(arg min_speed)"/>
+    <param name="max_speed" value="$(arg max_speed)"/>
+    <rosparam>
+        set_traj_service: /abb_arm/set_cartesian_trajectory
+        motion_monitor:
+            topic: /abb_arm/pose
+            tol: 1E-3
+            poll_rate: 50.0
+        
+        num_pose_waypoints: 10
+        speed_stream_name: next_state
+
+        waypoint_mode: fixed_waypoints
+        waypoints_x: [-0.2, 0.2, -0.2, 0.2, -0.2, 0.2]
+        waypoints_y: [0, 0, 0.05, 0.05, -0.05, -0.05]
+        
+        trigger_mode: continuous
+
+        z_value: 0.15
+        orientation: [1, 0, 0, 0]
+        seed: 1
+    </rosparam>
+</node>
+
+</launch>

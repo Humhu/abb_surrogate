@@ -85,6 +85,11 @@ class RandomSpeedWaypoints:
             timer_rate = rospy.get_param('~spin_rate')
             self.timer = rospy.Timer(rospy.Duration(1.0 / timer_rate),
                                      self.timer_callback)
+        elif trigger_mode == 'continuous':
+            while not rospy.is_shutdown():
+                self.__evaluate()
+        else:
+            raise ValueError('Unknown trigger mode: %s' % trigger_mode)
 
     def __initialize(self):
         if self.mode == 'fixed_waypoints':

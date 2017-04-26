@@ -1,0 +1,32 @@
+<launch>
+
+<arg name="enable_filter_reset" default="false"/>
+<arg name="critique_record" default="int_ape"/>
+<arg name="evaluation_delay" default="1.0"/>
+<arg name="evaluation_time" default="3.0"/>
+
+<include file="$(find abb_surrogate)/launch/rewards.launch"/>
+
+<include file="$(find abb_surrogate)/launch/motion/continuous_line.launch">
+    <arg name="min_speed" value="0.3"/>
+    <arg name="max_speed" value="0.5"/>
+</include>
+
+
+<node pkg="infitu" type="EmpiricalParameterEvaluator.py" name="evaluator" output="screen" required="true">
+    <param name="reset_filter_service" value="/state_estimator/reset" if="$(arg enable_filter_reset)"/>
+    <param name="evaluation_delay" value="$(arg evaluation_delay)"/>
+    <param name="evaluation_time" value="$(arg evaluation_time)"/>
+    <rosparam>
+        parameter_set_service: /vo_interface/set_parameters
+        evaluation_mode: fixed_duration
+
+        recorders:
+            int_mse: integrated_mse/set_recording
+            int_ape: integrated_ape/set_recording
+
+    </rosparam>
+    <param name="critique_record" value="$(arg critique_record)"/>
+</node>
+
+</launch>

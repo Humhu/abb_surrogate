@@ -3,7 +3,8 @@
    <node pkg="foxy_localization_evaluation" type="performance_estimator.py" name="mse" output="screen">
         <rosparam>
             log_rewards: true
-            max_reward: 10
+            max_reward: 8
+            min_reward: -2
         </rosparam>
     </node>
 
@@ -22,6 +23,7 @@
             vel_weights: [1,1,0,0,0,1]
             log_rewards: true
             min_reward: -2
+            max_reward: 8
         </rosparam>
     </node>
 

@@ -1,46 +1,20 @@
 <launch>
 
-    <include file="$(find abb_surrogate)/launch/rewards.launch"/>
+<include file="$(find abb_surrogate)/launch/motion/continuous_line.launch"/>
 
-    <node pkg="abb_surrogate" type="RandomSpeedWaypoints.py" name="arm_tester" output="screen" required="true">
-        <rosparam>
-            set_traj_service: /abb_arm/set_cartesian_trajectory
-            motion_monitor:
-                topic: /abb_arm/pose
-                tol: 1E-3
-                poll_rate: 50.0
-            
-            trigger_mode: timer
-            spin_rate: 1.0
-
-            num_pose_waypoints: 10
-            speed_stream_name: next_arm_speed
-
-            waypoint_mode: fixed_waypoints
-            waypoints_x: [-0.2, 0.2]
-            waypoints_y: [0, 0]
-            min_speed: 0.2
-            max_speed: 0.4
-            
-            z_value: 0.15
-            orientation: [1, 0, 0, 0]
-            seed: 1
-        </rosparam>
-    </node>
-
-    <node pkg="abb_surrogate" type="StepResponse.py" name="step_response" output="screen" required="true">
-        <remap from="reward" to="$(arg reward_topic)"/>
-        <param name="output_path" value="$(arg output_path)"/>
-        <rosparam>
-            action_lower_bound: -1
-            action_upper_bound: 1
-            action_dim: 11
-            mode: per_dimension
-            num_samples: 100
-            step_time: 5
-            random_seed: 1
-            set_parameters_service: vo_interface/set_parameters
-        </rosparam>
-    </node>
+<node pkg="abb_surrogate" type="StepResponse.py" name="step_response" output="screen" required="true">
+    <remap from="reward" to="$(arg reward_topic)"/>
+    <param name="output_path" value="$(arg output_path)"/>
+    <rosparam>
+        action_lower_bound: -1
+        action_upper_bound: 1
+        action_dim: 11
+        mode: per_dimension
+        num_samples: 100
+        step_time: 5
+        random_seed: 1
+        set_parameters_service: vo_interface/set_parameters
+    </rosparam>
+</node>
 
 </launch>

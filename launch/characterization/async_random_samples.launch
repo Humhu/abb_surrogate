@@ -1,0 +1,15 @@
+<launch>
+
+<node pkg="abb_surrogate" type="SynchronizedRandomSample.py" name="sampler" output="screen" required="true">
+    <param name="output_path" value="$(arg output_path)"/>
+    <rosparam>
+        action_lower_bound: -1
+        action_upper_bound: 1
+        action_dim: 11
+        num_samples: 300
+        input_stream: next_state
+        critique_topic: evaluator/get_critique
+    </rosparam>
+</node>
+
+</launch>

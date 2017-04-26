@@ -4,7 +4,7 @@
 <arg name="prog_path" default="prog.pkl"/>
 <arg name="resume" default="true"/>
 
-<node pkg="optim" type="BayesianOptimizer.py" name="optimizer" output="screen" launch-prefix="xterm -hold -e" required="true">
+<node pkg="optim" type="BayesianOptimizer.py" name="optimizer" output="screen" launch-prefix="xterm -e" required="true">
     <param name="output_path" value="$(arg out_file)"/>
     <param name="load_path" value="$(arg load_path)" if="$(arg resume)"/>
     <param name="progress_path" value="$(arg prog_path)"/>
