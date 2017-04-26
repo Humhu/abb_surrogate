@@ -6,13 +6,6 @@ import rospy
 from geometry_msgs.msg import PoseStamped
 from threading import Lock
 
-
-def wait_for_service(srv):
-    rospy.loginfo('Waiting for service %s to become available...', srv)
-    rospy.wait_for_service(srv)
-    rospy.loginfo('Service %s is now available!', srv)
-
-
 class ArmMotionMonitor(object):
     """Monitors the arm pose topic to determine if the arm is moving.
     """
