@@ -29,6 +29,7 @@
         reward_model:
             type: gaussian_process
             batch_retries: 10
+            enable_refine: false
             refine_ll_delta: 0.1
             refine_retries: 3
             verbose: true

@@ -14,7 +14,7 @@
             poll_rate: 50.0
         
         num_pose_waypoints: 10
-        speed_stream_name: next_state
+        speed_stream_name: next_speed
 
         waypoint_mode: fixed_waypoints
         waypoints_x: [-0.2, 0.2, -0.2, 0.2, -0.2, 0.2]

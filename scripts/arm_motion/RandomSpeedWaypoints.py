@@ -67,7 +67,7 @@ class RandomSpeedWaypoints:
         self.num_waypoints = rospy.get_param('~num_pose_waypoints', 20)
 
         seed = rospy.get_param('~seed', None)
-        rospy.loginfo('Seeing RNG with %s', str(seed))
+        rospy.loginfo('Seeding RNG with %s', str(seed))
         np.random.seed(seed)
 
         self.__initialize()
@@ -94,7 +94,8 @@ class RandomSpeedWaypoints:
     def __initialize(self):
         if self.mode == 'fixed_waypoints':
             wp = self.waypoints[-1]
-            self.__set_trajectory([wp[0]], [wp[1]], [5.0])
+            # NOTE Hardcoded initialization slew time
+            self.__set_trajectory([wp[0]], [wp[1]], [2.0])
         elif self.mode == 'random_waypoints':
             self.__set_trajectory([0], [0], [self.step_time])
             self.curr_waypoint = np.array((0, 0))

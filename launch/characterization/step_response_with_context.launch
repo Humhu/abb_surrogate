@@ -1,0 +1,27 @@
+<launch>
+
+<arg name="reward_topic" default="ape/reward"/>
+<arg name="output_path"/>
+<arg name="param_dim"/>
+<arg name="num_samples"/>
+<arg name="init_samples" default="1"/>
+
+<include file="$(find abb_surrogate)/launch/rewards.launch"/>
+
+<include file="$(find abb_surrogate)/launch/motion/continuous_line.launch">
+    <arg name="min_speed" value="0.3"/>
+    <arg name="max_speed" value="0.3"/>
+</include>
+
+<include file="$(find infitu)/launch/step_response_with_context.launch">
+    <arg name="mode" value="joint"/>
+    <arg name="num_samples" value="$(arg num_samples)"/>
+    <arg name="param_service" value="vo_interface/set_parameters"/>
+    <arg name="reward_topic" value="$(arg reward_topic)"/>
+    <arg name="context_stream" value="next_speed"/>
+    <arg name="action_dim" value="$(arg param_dim)"/>
+    <arg name="output_path" value="$(arg output_path)"/>
+    <arg name="init_samples" value="$(arg init_samples)"/>
+</include>
+
+</launch>

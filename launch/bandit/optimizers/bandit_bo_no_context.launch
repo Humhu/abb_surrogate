@@ -1,48 +1,14 @@
 <launch>
 
-<arg name="out_file" default="out.pkl"/>
+<arg name="out_path" default="out.pkl"/>
 <arg name="prog_path" default="prog.pkl"/>
 <arg name="resume" default="true"/>
 
-<node pkg="optim" type="BayesianOptimizer.py" name="optimizer" output="screen" launch-prefix="xterm -e" required="true">
-    <param name="output_path" value="$(arg out_file)"/>
-    <param name="load_path" value="$(arg load_path)" if="$(arg resume)"/>
-    <param name="progress_path" value="$(arg prog_path)"/>
-    <rosparam>
-        interface:
-            topic: evaluator/get_critique
-            verbose: true
+<include file="$(find abb_surrogate)/launch/motion/continuous_line.launch">
+    <arg name="min_speed" value="0.3"/>
+    <arg name="max_speed" value="0.3"/>
+</include>
 
-        dim: 9
-        lower_bounds: -1
-        upper_bounds: 1
-
-        sequential_mode: false
-
-        initialization:
-            num_samples: 50
-            method: uniform
-
-        exploration_rate: 3.0
-        reward_model:
-            type: gaussian_process
-            batch_retries: 10
-            refine_ll_delta: 0.1
-            refine_retries: 3
-            verbose: true
-
-        auxiliary_optimizer:
-            type: bfgs
-            mode: max
-            num_restarts: 10
-            ftol: 1e-6
-            gtol: 1e-6
-            maxiter: 500
-
-        convergence:
-            max_evaluations: 300
-    </rosparam>
-
-</node>
+<include file="$(find optim)/launch/critique_bayesopt.launch" pass_all_args="true"/>
 
 </launch>
