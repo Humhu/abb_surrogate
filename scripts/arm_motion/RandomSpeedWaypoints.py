@@ -12,6 +12,7 @@ import broadcast
 from abb_surrogate import *
 from itertools import izip
 
+from argus_utils import wait_for_service
 
 class RandomSpeedWaypoints:
     """Moves the arm back and forth at random speeds.
