@@ -3,8 +3,8 @@
 detector_intensity_threshold:
     param_name: intensity_threshold
     base_namespace: visual_odometry/vo_node/detector
-    lower_limit: 0
-    upper_limit: 255
+    lower_limit: 10
+    upper_limit: 100
 detector_max_num_points:
     param_name: max_num_points
     base_namespace: visual_odometry/vo_node/detector

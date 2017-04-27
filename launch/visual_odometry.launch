@@ -78,11 +78,11 @@
                 log_min_eps: -6
                 window_dim: 10
                 pyramid_level: 0
-                flow_eigenvalue_threshold: 0
-                flow_error_threshold: 15
+                log_flow_eigenvalue_threshold: -4
+                flow_error_threshold: 10
             estimator:
                 type: rigid
-                log_reprojection_threshold: -1
+                log_reprojection_threshold: -2
                 scale: 0.135
                 max_iters: 200
             </rosparam>

@@ -8,11 +8,6 @@
 
 <include file="$(find abb_surrogate)/launch/rewards.launch"/>
 
-<include file="$(find abb_surrogate)/launch/motion/continuous_line.launch">
-    <arg name="min_speed" value="0.3"/>
-    <arg name="max_speed" value="0.3"/>
-</include>
-
 <include file="$(find infitu)/launch/step_response_with_context.launch">
     <arg name="mode" value="joint"/>
     <arg name="num_samples" value="$(arg num_samples)"/>

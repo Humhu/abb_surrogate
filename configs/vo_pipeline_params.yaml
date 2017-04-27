@@ -1,0 +1,13 @@
+# VO pipeline parameters
+
+pipeline_redetection_threshold:
+    param_name: redetection_threshold
+    base_namespace: visual_odometry/vo_node
+    lower_limit: 0.5
+    upper_limit: 1.0
+
+pipeline_min_inlier_ratio:
+    param_name: min_inlier_ratio
+    base_namespace: visual_odometry/vo_node
+    lower_limit: 0.25
+    upper_limit: 0.75

@@ -1,0 +1,7 @@
+<launch>
+
+<include file="$(find abb_surrogate)/launch/evaluators/bandit_base.launch" pass_all_args="true">
+    <arg name="enable_evaluation" value="false"/>
+</include>
+
+</launch>

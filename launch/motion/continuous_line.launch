@@ -22,7 +22,7 @@
         
         trigger_mode: continuous
 
-        z_value: 0.15
+        z_value: 0.1
         orientation: [1, 0, 0, 0]
         seed: 1
     </rosparam>
