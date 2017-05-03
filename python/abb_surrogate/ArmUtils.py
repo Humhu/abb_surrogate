@@ -12,7 +12,7 @@ class ArmMotionMonitor(object):
 
     def __init__(self, topic, tol, poll_rate):
         self._sub = rospy.Subscriber(topic, PoseStamped,
-                                     self.pose_callback, queue_size=10)
+                                     self.pose_callback, queue_size=1)
         self._last_pose = None
         self._last_time = None
         self._tol = float(tol)

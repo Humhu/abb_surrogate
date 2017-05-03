@@ -1,13 +1,8 @@
 <launch>
 
-<arg name="out_path" default="out.pkl"/>
-<arg name="prog_path" default="prog.pkl"/>
+<arg name="output_path" default="out.pkl"/>
+<arg name="progress_path" default="prog.pkl"/>
 <arg name="resume" default="true"/>
-
-<include file="$(find abb_surrogate)/launch/motion/continuous_line.launch">
-    <arg name="min_speed" value="0.3"/>
-    <arg name="max_speed" value="0.3"/>
-</include>
 
 <include file="$(find optim)/launch/critique_bayesopt.launch" pass_all_args="true"/>
 

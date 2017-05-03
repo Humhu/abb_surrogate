@@ -1,0 +1,9 @@
+<launch>
+
+<arg name="output_path" default="out.pkl"/>
+<arg name="prog_path" default="prog.pkl"/>
+<arg name="resume" default="true"/>
+
+<include file="$(find optim)/launch/critique_cma.launch" pass_all_args="true"/>
+
+</launch>

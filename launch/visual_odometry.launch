@@ -1,6 +1,6 @@
 <launch>
   
-    <include file="$(find foxy_localization_bringup)/launch/foxybot_state_estimator.launch"/>
+    <include file="$(find foxy_localization_bringup)/launch/algorithms/state_estimator.launch"/>
 
     <group ns="visual_odometry">
         <node pkg="extrinsics_array" type="extrinsics_publisher_node" name="extpub">
@@ -24,31 +24,41 @@
             </rosparam>
         </node>
 
-        <!--   <node pkg="fieldtrack" type="velocity_converter_node" name="vo_converter" output="screen">
-            <remap from="twist" to="velocity_raw"/>
-            <rosparam>
-                target_body_frame: end_effector
-            </rosparam>
-            </node> -->
-
         <node pkg="camplex" type="camera_node" name="camera">
             <rosparam>
                 device_path: /dev/video0
                 camera_name: pseye051_wide
-                frame_resolution: [320, 240]
+                frame_width: 320
+                frame_height: 240
                 frame_rate: 120
                 stream_on_start: true
                 controls:
                     auto_exposure:
                         id: 10094849
-                        value: 1
+                        value: 0
                     auto_gain:
                         id: 9963794
-                        value: 1
+                        value: 0
             </rosparam>
         </node>
 
-        <node pkg="odoflow" type="visual_odometry_node" name="vo_node" output="screen">
+        <node pkg="camplex" type="resize_node" name="vo_resizer" output="screen">
+            <remap from="image_raw" to="camera/image_raw"/>
+            <remap from="image_resized" to="~image_raw"/>
+            <rosparam>
+                interpolation_mode: linear
+            </rosparam>
+        </node>
+
+        <node pkg="odoflow" type="dense_vo_node" name="vo_node" output="log">
+            <remap from="image" to="vo_resizer/image_raw"/>
+            <remap from="~velocity_raw" to="velocity_raw"/>
+            <rosparam>
+                scale: 0.1
+            </rosparam>
+        </node>
+
+        <!--<node pkg="odoflow" type="visual_odometry_node" name="vo_node" output="screen">
             <rosparam>
             sources:
                 camera:
@@ -65,8 +75,6 @@
             min_num_keypoints: 10
 
             detector:
-                <!--type: fixed
-                grid_dim: 7-->
                 type: FAST
                 intensity_threshold: 20
                 enable_nonmax_suppression: true
@@ -86,7 +94,7 @@
                 scale: 0.135
                 max_iters: 200
             </rosparam>
-        </node>
+        </node>-->
 
     </group>
 </launch>

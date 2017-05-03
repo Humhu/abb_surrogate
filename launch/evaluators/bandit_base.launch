@@ -16,12 +16,14 @@
     <param name="evaluation_time" value="$(arg evaluation_time)"/>
     <param name="start_evaluation_service" value="$(arg evaluation_service)" if="$(arg enable_evaluation)"/>
     <rosparam>
-        parameter_set_service: /vo_interface/set_parameters
+        parameter_set_service: /vo_interface/set_normalized_parameters
         evaluation_mode: fixed_duration
 
         recorders:
-            int_mse: integrated_mse/set_recording
+            int_sse: integrated_sse/set_recording
             int_ape: integrated_ape/set_recording
+            avg_oll: average_oll/set_recording
+            sum_oll: sum_oll/set_recording
 
     </rosparam>
     <param name="critique_record" value="$(arg critique_record)"/>

@@ -1,0 +1,23 @@
+# VO detector parameters
+
+dense_max_iters:
+    param_name: max_iters
+    base_namespace: visual_odometry/vo_node
+    lower_limit: 10
+    upper_limit: 50
+dense_log_min_eps:
+    param_name: log_min_eps
+    base_namespace: visual_odometry/vo_node
+    lower_limit: -5
+    upper_limit: -2
+dense_min_correlation:
+    param_name: min_correlation
+    base_namespace: visual_odometry/vo_node
+    lower_limit: 0.75
+    upper_limit: 1.0
+dense_pyramid_depth:
+    param_name: pyramid_depth
+    base_namespace: visual_odometry/vo_node
+    lower_limit: 0
+    upper_limit: 4
+    

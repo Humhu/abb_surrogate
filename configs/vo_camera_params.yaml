@@ -10,3 +10,8 @@ camera_gain:
     base_namespace: visual_odometry/camera
     lower_limit: 0
     upper_limit: 63
+camera_scale:
+    param_name: output_scale
+    base_namespace: visual_odometry/vo_resizer
+    lower_limit: 0.25
+    upper_limit: 1.0

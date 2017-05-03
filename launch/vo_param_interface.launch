@@ -7,13 +7,14 @@
 <arg name="estimator_params" default="true"/>
 <arg name="pipeline_params" default="true"/>
 
-<node pkg="infitu" type="ContinuousParameterInterface.py" name="vo_interface" output="screen" required="true">
-    <param name="interface/verbose" value="$(arg verbose)"/>
-    <rosparam command="load" file="$(find abb_surrogate)/configs/vo_camera_params.yaml" if="$(arg camera_params)" ns="interface"/>
-    <rosparam command="load" file="$(find abb_surrogate)/configs/vo_detector_params.yaml" if="$(arg detector_params)" ns="interface"/>
-    <rosparam command="load" file="$(find abb_surrogate)/configs/vo_tracker_params.yaml" if="$(arg tracker_params)" ns="interface"/>    
-    <rosparam command="load" file="$(find abb_surrogate)/configs/vo_estimator_params.yaml" if="$(arg estimator_params)" ns="interface"/>
-    <rosparam command="load" file="$(find abb_surrogate)/configs/vo_pipeline_params.yaml" if="$(arg pipeline_params)" ns="interface"/>
+<node pkg="infitu" type="numeric_param_interface.py" name="vo_interface" output="screen" required="true">
+    <param name="verbose" value="$(arg verbose)"/>
+    <param name="type" value="paraset"/>
+    <rosparam command="load" file="$(find abb_surrogate)/configs/vo_camera_params.yaml" if="$(arg camera_params)"/>
+    <rosparam command="load" file="$(find abb_surrogate)/configs/vo_detector_params.yaml" if="$(arg detector_params)"/>
+    <rosparam command="load" file="$(find abb_surrogate)/configs/vo_tracker_params.yaml" if="$(arg tracker_params)"/>    
+    <rosparam command="load" file="$(find abb_surrogate)/configs/vo_estimator_params.yaml" if="$(arg estimator_params)"/>
+    <rosparam command="load" file="$(find abb_surrogate)/configs/vo_pipeline_params.yaml" if="$(arg pipeline_params)"/>
 </node>
 
 </launch>

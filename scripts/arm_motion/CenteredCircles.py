@@ -3,14 +3,19 @@
 import rospy
 import math
 import numpy as np
+import scipy.spatial.distance as spd
+from itertools import izip
+
+from geometry_msgs.msg import Pose
+
 from open_abb_driver.srv import SetCartesianTrajectory, SetCartesianTrajectoryRequest
 from percepto_msgs.msg import EpisodeBreak
 from fieldtrack.srv import ResetFilter
-from geometry_msgs.msg import Pose
 from infitu.srv import StartEvaluation, StartTeardown
+
 import broadcast
-from abb_surrogate import wait_for_service, ArmMotionMonitor
-from itertools import izip
+from argus_utils import wait_for_service
+from abb_surrogate import ArmMotionMonitor
 
 
 class CenteredCircles:
@@ -46,7 +51,7 @@ class CenteredCircles:
         self.lower_speed = rospy.get_param('~min_speed')
         self.upper_speed = rospy.get_param('~max_speed')
 
-        self.teardown_dt = rospy.get_param('~teardown_time')
+        # self.teardown_dt = rospy.get_param('~teardown_time')
         self.teardown_interp_density = rospy.get_param(
             '~teardown_interp_density')
 
@@ -71,18 +76,32 @@ class CenteredCircles:
         self.break_pub = rospy.Publisher('~breaks', EpisodeBreak,
                                          queue_size=10)
 
-        self.evaluation_service = rospy.Service('~start_trajectory',
-                                                StartEvaluation,
-                                                self.evaluation_callback)
-        self.teardown_service = rospy.Service('~start_teardown',
-                                              StartTeardown,
-                                              self.teardown_callback)
-
         self.__next_waypoint()
+
+        trigger_mode = rospy.get_param('~trigger_mode')
+        if trigger_mode == 'service':
+            self.evaluation_service = rospy.Service('~start_trajectory',
+                                                    StartEvaluation,
+                                                    self.evaluation_callback)
+            self.teardown_service = rospy.Service('~start_teardown',
+                                                StartTeardown,
+                                                self.teardown_callback)
+        elif trigger_mode == 'timer':
+            timer_rate = rospy.get_param('~spin_rate')
+            self.timer = rospy.Timer(rospy.Duration(1.0 / timer_rate),
+                                     self.timer_callback)
+        elif trigger_mode == 'continuous':
+            while not rospy.is_shutdown():
+                self.__evaluate()
+                self.__next_waypoint()
+        else:
+            raise ValueError('Unknown trigger mode: %s' % trigger_mode)
+
 
     def __next_waypoint(self):
 
         # Get next waypoint
+        curr_waypoint = self.next_waypoint
         self.next_waypoint = self.waypoints[self.waypoint_i]
         self.waypoint_i += 1
         if self.waypoint_i >= len(self.waypoints):
@@ -100,9 +119,10 @@ class CenteredCircles:
                                feats=[self.next_waypoint[0], speed])
 
         # Move to next centerpoint
+        dwaypoint = spd.euclidean(curr_waypoint, self.next_waypoint)
         self.__set_trajectory(xs=[self.next_waypoint[0] + self.radius],
                               ys=[self.next_waypoint[1]],
-                              dts=[self.teardown_dt],
+                              dts=[dwaypoint / speed],
                               ns=[self.teardown_interp_density])
         self.motion_monitor.wait_for_stationary()
 
@@ -110,7 +130,7 @@ class CenteredCircles:
         theta = np.linspace(start=0, stop=n_loops * 2 * math.pi, num=n_points)
         x = r * np.cos(theta) + c[0]
         y = r * np.sin(theta) + c[1]
-        dts = np.full(n_points, dt / n_points)
+        dts = np.full(n_points, dt * n_loops / n_points)
         ns = np.full(n_points, self.loop_interp_density)
         self.__set_trajectory(xs=x, ys=y, dts=dts, ns=ns)
 
@@ -152,6 +172,10 @@ class CenteredCircles:
     def teardown_callback(self, srv):
         self.__next_waypoint()
         return []
+
+    def timer_callback(self, event):
+        self.__evaluate()
+        self.__next_waypoint()
 
     def __evaluate(self):
         self.motion_monitor.wait_for_stationary()

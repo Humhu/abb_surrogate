@@ -1,0 +1,14 @@
+<launch>
+
+<arg name="camera_params" default="true"/>
+<arg name="dense_params" default="true"/>
+<arg name="verbose" default="false"/>
+
+<node pkg="infitu" type="numeric_param_interface.py" name="vo_interface" output="screen" required="true">
+    <param name="verbose" value="$(arg verbose)"/>
+    <param name="type" value="paraset"/>
+    <rosparam command="load" file="$(find abb_surrogate)/configs/vo_camera_params.yaml" if="$(arg camera_params)" />
+    <rosparam command="load" file="$(find abb_surrogate)/configs/vo_dense_params.yaml" if="$(arg dense_params)" />
+</node>
+
+</launch>

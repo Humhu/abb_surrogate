@@ -1,0 +1,13 @@
+<launch>
+
+<arg name="output_path" default="out.pkl"/>
+<arg name="progress_path" default="prog.pkl"/>
+<arg name="resume" default="true"/>
+<arg name="enable_context"/>
+
+<include file="$(find optim)/launch/critique_bayesopt.launch" pass_all_args="true">
+    <arg name="context_stream" value="next_speed"/>
+    <arg name="run_on_start" value="true"/>
+</include>
+
+</launch>

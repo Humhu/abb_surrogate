@@ -7,7 +7,7 @@ tracker_max_iters:
 tracker_log_min_eps:
     param_name: log_min_eps
     base_namespace: visual_odometry/vo_node/tracker
-    lower_limit: -3
+    lower_limit: -6
     upper_limit: 0
 tracker_pyramid_level:
     param_name: pyramid_level
@@ -22,10 +22,10 @@ tracker_window_dim:
 tracker_flow_error:
     param_name: flow_error_threshold
     base_namespace: visual_odometry/vo_node/tracker
-    lower_limit: 0
+    lower_limit: 5
     upper_limit: 10.0
 tracker_log_flow_eigen_threshold:
     param_name: log_flow_eigenvalue_threshold
     base_namespace: visual_odometry/vo_node/tracker
-    lower_limit: -6
+    lower_limit: -4
     upper_limit: -1

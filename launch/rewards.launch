@@ -1,39 +1,66 @@
 <launch>
 
-   <node pkg="foxy_localization_evaluation" type="performance_estimator.py" name="mse" output="screen">
-        <rosparam>
-            log_rewards: true
-            max_reward: 8
-            min_reward: -2
-        </rosparam>
-    </node>
+   <node pkg="infitu" type="sse_reward_node" name="sse" output="screen">
+    <rosparam>
+        pose_err_weights: [0,0,0,0,0,0]
+        vel_err_weights: [1,1,0,0,0,1]
+        log_rewards: true
+        min_reward: -2
+        max_reward: 8
+    </rosparam>
+</node>
 
-  <node pkg="infitu" type="RewardAccumulator.py" name="integrated_mse" output="screen">
-      <remap from="reward" to="mse/reward"/>
-      <rosparam>
-          mode:
-            time_integrate: true
-            normalize_time: true
-      </rosparam>
-  </node>
+<node pkg="infitu" type="reward_accumulator_node" name="integrated_sse" output="screen">
+    <remap from="reward" to="sse/reward"/>
+    <rosparam>
+        time_integrate: true
+        normalize_by_time: true
+        default_on_empty: true
+        default_value: nan
+    </rosparam>
+</node>
 
-    <node pkg="infitu" type="MSEPerformanceEvaluator.py" name="ape" output="screen">
-        <rosparam>
-            pose_weights: [0,0,0,0,0,0]
-            vel_weights: [1,1,0,0,0,1]
-            log_rewards: true
-            min_reward: -2
-            max_reward: 8
-        </rosparam>
-    </node>
+<node pkg="infitu" type="ape_reward_node" name="ape" output="screen">
+  <rosparam>
+    pose_cov_weights: [0,0,0,0,0,0]
+    vel_cov_weights: [1,1,0,0,0,1]
+    log_rewards: true
+    min_reward: -2
+    max_reward: 8
+  </rosparam>
+</node>
 
-    <node pkg="infitu" type="RewardAccumulator.py" name="integrated_ape" output="screen">
-      <remap from="reward" to="ape/reward"/>
-      <rosparam>
-          mode:
-            time_integrate: true
-            normalize_time: true
-      </rosparam>
-  </node>
+<node pkg="infitu" type="reward_accumulator_node" name="integrated_ape" output="screen">
+    <remap from="reward" to="ape/reward"/>
+    <rosparam>
+        time_integrate: true
+        normalize_by_time: true
+        default_on_empty: true
+        default_value: nan
+    </rosparam>
+</node>
+
+<node pkg="infitu" type="oll_reward_node" name="observation_log_likelihood" output="screen">
+  <remap from="info" to="/state_estimator/step_info"/>
+</node>
+
+<node pkg="infitu" type="reward_accumulator_node" name="average_oll" output="screen">
+    <remap from="reward" to="observation_log_likelihood/reward"/>
+    <rosparam>
+        normalize_by_count: true
+        default_on_empty: true
+        default_value: nan
+        buffer_size: 1000
+    </rosparam>
+</node>
+
+<node pkg="infitu" type="reward_accumulator_node" name="sum_oll" output="screen">
+    <remap from="reward" to="observation_log_likelihood/reward"/>
+    <rosparam>
+        default_on_empty: true
+        default_value: nan
+        buffer_size: 1000
+    </rosparam>
+</node>
 
 </launch>
